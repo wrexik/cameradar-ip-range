@@ -43,7 +43,6 @@ while True:
     except:
         print("Thats not a number try again")
 
-
 while True:
     try: 
         text = "Input the first IP address: {}.{}.{}.".format(feild_1, feild_2, feild_3)
@@ -54,7 +53,7 @@ while True:
         print("Thats not a number try again")
 
 
+ip = str(feild_1) + "." + str(feild_2) + "." + str(feild_3) + "." + str(feild_4)
 
-    
-
+print("Selected IP (FROM) {}, now enter the second ip (TO)".format(ip))
 
