@@ -131,16 +131,28 @@ def check_ip(ip_from, ip_list, ip_count):
             target_ip = str(ip_address)
             
             # Run Cameradar Docker container for the current IP address
-            docker_command = ["docker", "run", "-t", "ullaakut/cameradar", "-t", target_ip]
+            docker_command = ["docker", "run", "-d", "ullaakut/cameradar", "-t", target_ip]
             try:
-                result = subprocess.run(docker_command, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+                # Run Docker container in detached mode and capture the container ID
+                container_id = subprocess.check_output(docker_command, text=True).strip()
+
+                # Show the logs of the Docker container
+                logs_command = ["docker", "logs", "--follow", container_id]
+                logs_result = subprocess.run(logs_command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+
+                print(f"Logs for {target_ip}:")
+                print(logs_result.stdout)
+                
                 print(f"Successful for {target_ip}")
-                print(result.stdout)
+
             except subprocess.CalledProcessError as e:
                 print(f"Failed for {target_ip}")
                 print(e.stderr)
-            t.sleep(0.5)
 
+            # Remove the Docker container after checking
+            subprocess.run(["docker", "rm", container_id])
+
+            t.sleep(0.5)
             bar()
 
 # Code
