@@ -125,14 +125,16 @@ def get_list(ip_from, ip_to):
     return ip_list, ip_count
 
 def check_ip(ip_from, ip_list, ip_count):
-    with alive_bar(ip_count, title="IP's Checked", bar="bubbles", monitor="ETA", calibrate=50) as bar:
+
+    print(target_ip)
+
+    with alive_bar(ip_count, title="IP's Checked", bar="bubbles", monitor="ETA", calibrate=1) as bar:
         for ip_address in ip_list:
             # Format the IP address for the Docker command
-            target_ip = str(ip_address)
-            
-            
+            target_ip = str(ip_address)   
+
             # Run Cameradar Docker container for the current IP address
-            docker_command = ["docker", "run", "-d", "ullaakut/cameradar", "-t", target_ip, "-p 554, 5554, 8554, 8080"]
+            docker_command = ["docker", "run", "-d", "-t ullaakut/cameradar", "-t", target_ip, "-p 554, 5554, 8554, 8080"]
             try:
                 # Run Docker container in detached mode and capture the container ID
                 container_id = subprocess.check_output(docker_command, text=True).strip()
