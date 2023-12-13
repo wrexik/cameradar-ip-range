@@ -6,6 +6,8 @@ import os
 import netaddr
 from alive_progress import alive_bar
 
+import subprocess
+
 #Definitions / Functions
 osn = os.name
 
@@ -16,7 +18,6 @@ def clear():
     else:
         os.system('cls')
 
-#Code
 def set_ips():
     while True:
         try: 
@@ -112,60 +113,69 @@ def set_ips():
     print("Selected IP (FROM) {}".format(ip_from))
     print("Selected IP (TO) {}".format(ip_to))
 
+def get_len(list):
+    count = 0
+    for element in list:
+        count += 1
+    return count
+
 def get_list():
-    global list
+    global ip_list
     global ip_count
 
-    list = list(netaddr.iter_iprange(ip_from, ip_to))
+    ip_list = list(netaddr.iter_iprange(ip_from, ip_to))
 
-    ip_count = range(len(list))
+    ip_count = len(ip_list)
 
     return ip_count
 
+def check_ip():
+    with alive_bar(ip_count, title="IP's Checked", bar="bubbles", monitor="ETA", calibrate=50) as bar:
+        for ip_address in ip_list:
+            # Format the IP address for the Docker command
+            target_ip = str(ip_address)
+            
+            # Run Cameradar Docker container for the current IP address
+            docker_command = ["docker", "run", "-t", "ullaakut/cameradar", "-t", target_ip]
+            try:
+                result = subprocess.run(docker_command, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+                print(f"Successful for {target_ip}")
+                print(result.stdout)
+            except subprocess.CalledProcessError as e:
+                print(f"Failed for {target_ip}")
+                print(e.stderr)
+            t.sleep(.5)
 
-range = set_ips()
+            bar()
 
+check_ip()
+
+#Code
+
+ip_range = set_ips()
 
 while True:
+    decide = input("Is this right? [Y/N] ")
 
-    deside = input("Is this right? [Y/N] ")
-
-    if deside == "y" or deside == "Y":
+    if decide.lower() == "y":
         resume = True
         break
-
     else:
         print(" Gosh, well well...")
         set_ips()
 
-if resume == True:
+if resume:
+    clear()
+
     print("OK - Resuming")
 
 get_list()
 
-print("OK - IP addresses to be checked: {}".format(len(list)))
-
-print(type(len(list)))
+print("OK - IP addresses to be checked: {}".format(len(ip_list)))
 
 print("OK - Started checking")
 
-def check_ip():
-    for total in ip_count:
-        with alive_bar(total) as bar:
-            for _ in range(ip_count):
-
-
-                t.sleep(1)
-                bar()
-
+print("")
 
 check_ip()
-
-
-
-
-
-
-
-    
 
