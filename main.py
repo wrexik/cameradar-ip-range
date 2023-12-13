@@ -136,21 +136,25 @@ def check_ip(ip_from, ip_list, ip_count):
                 # Run Docker container in detached mode and capture the container ID
                 container_id = subprocess.check_output(docker_command, text=True).strip()
 
-                # Show the logs of the Docker container
+                # Show the logs of the Docker container in real-time
                 logs_command = ["docker", "logs", "--follow", container_id]
-                logs_result = subprocess.run(logs_command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+                logs_process = subprocess.Popen(logs_command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
 
-                print(f"Logs for {target_ip}:")
-                print(logs_result.stdout)
-                
+                print(f"Logs for {target_ip} (updating in real-time):")
+
+                # Loop to print logs while the container is running
+                for line in logs_process.stdout:
+                    print(line, end='')
+
                 print(f"Successful for {target_ip}")
 
             except subprocess.CalledProcessError as e:
                 print(f"Failed for {target_ip}")
                 print(e.stderr)
 
-            # Remove the Docker container after checking
-            subprocess.run(["docker", "rm", container_id])
+            finally:
+                # Remove the Docker container after checking
+                subprocess.run(["docker", "rm", container_id])
 
             t.sleep(0.5)
             bar()
