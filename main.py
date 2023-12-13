@@ -142,11 +142,11 @@ def run_container(target_ip):
 
         # Loop to print output while the container is running
         for line in docker_process.stdout:
+            print(line, end='')
+            
             if not line.find("no stream found"):
                 print("OK - Streams found")
                 found_in_ip = +1
-            
-            print(line, end='')
 
         docker_process.stdout.close()
 
