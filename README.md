@@ -1,2 +1,2 @@
 # cameradar-ip-range
-Uses quick python script to find and access cameras in given IP range
+Uses quick python script to find and discover cameras in given IP range, credentials...
