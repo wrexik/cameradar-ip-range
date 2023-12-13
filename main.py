@@ -124,45 +124,46 @@ def get_list(ip_from, ip_to):
     ip_count = len(ip_list)
     return ip_list, ip_count
 
+def run_container(target_ip):
+    docker_command = ["docker", "run", "-d", "-t", "ullaakut/cameradar", "-t", target_ip, "-p", "554,5554,8554,8080"]
+    try:
+        # Run Docker container in detached mode and capture the container ID
+        container_id = subprocess.check_output(docker_command, text=True).strip()
+
+        # Show the output from Docker container in real-time
+        docker_command = ["docker", "logs", "--follow", container_id]
+        docker_process = subprocess.Popen(docker_command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+
+        print(f"Output for {target_ip} (updating in real-time):")
+
+        # Loop to print output while the container is running
+        for line in docker_process.stdout:
+            print(line, end='')
+
+        docker_process.stdout.close()
+
+        print(f"Successful for {target_ip}")
+
+    except subprocess.CalledProcessError as e:
+        print(f"Failed for {target_ip}")
+        print(e.stderr)
+
+    finally:
+        # Remove the Docker container after checking
+        subprocess.run(["docker", "rm", container_id])
+
 def check_ip(ip_from, ip_list, ip_count):
-
-    print(target_ip)
-
-    with alive_bar(ip_count, title="IP's Checked", bar="bubbles", monitor="ETA", calibrate=1) as bar:
+    with alive_bar(ip_count, title="IP's Checked", bar="bubbles", monitor="ETA", calibrate=50) as bar:
         for ip_address in ip_list:
             # Format the IP address for the Docker command
-            target_ip = str(ip_address)   
+            target_ip = str(ip_address)
 
-            # Run Cameradar Docker container for the current IP address
-            docker_command = ["docker", "run", "-d", "-t ullaakut/cameradar", "-t", target_ip, "-p 554, 5554, 8554, 8080"]
-            try:
-                # Run Docker container in detached mode and capture the container ID
-                container_id = subprocess.check_output(docker_command, text=True).strip()
-
-                # Show the logs of the Docker container in real-time
-                logs_command = ["docker", "logs", "--follow", container_id]
-                logs_process = subprocess.Popen(logs_command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-
-                print(f"Logs for {target_ip} (updating in real-time):")
-
-                # Loop to print logs while the container is running
-                for line in logs_process.stdout:
-                    print(line, end='')
-
-                print(f"Successful for {target_ip}")
-
-            except subprocess.CalledProcessError as e:
-                print(f"Failed for {target_ip}")
-                print(e.stderr)
-
-            finally:
-                # Remove the Docker container after checking
-                subprocess.run(["docker", "stop", container_id])
-                subprocess.run(["docker", "rm", container_id])
+            print(f"Checking {target_ip}...")
+            run_container(target_ip)
 
             t.sleep(0.5)
             bar()
-
+            
 # Code
 ip_range = set_ips()
 
