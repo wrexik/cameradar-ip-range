@@ -154,6 +154,7 @@ def check_ip(ip_from, ip_list, ip_count):
 
             finally:
                 # Remove the Docker container after checking
+                subprocess.run(["docker", "stop", container_id])
                 subprocess.run(["docker", "rm", container_id])
 
             t.sleep(0.5)
