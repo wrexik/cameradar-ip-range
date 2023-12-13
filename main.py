@@ -131,7 +131,7 @@ def check_ip(ip_from, ip_list, ip_count):
             target_ip = str(ip_address)
             
             # Run Cameradar Docker container for the current IP address
-            docker_command = ["docker", "run", "-d", "ullaakut/cameradar", "-t", target_ip]
+            docker_command = ["docker", "run", "-d", "ullaakut/cameradar", "-t", target_ip, "-p 554, 5554, 8554, 8080"]
             try:
                 # Run Docker container in detached mode and capture the container ID
                 container_id = subprocess.check_output(docker_command, text=True).strip()
