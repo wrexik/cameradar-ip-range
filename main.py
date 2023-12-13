@@ -129,10 +129,10 @@ def run_container(target_ip):
     global found_in_ip
     found_in_ip = 0
     try:
-        # Run Docker container in detached mode and capture the container ID
+        #Run Docker container in detached mode and capture the container ID
         container_id = subprocess.check_output(docker_command, text=True).strip()
 
-        # Show the output from Docker container in real-time
+        #Show the output from Docker container in real-time
         docker_command = ["docker", "logs", "--follow", container_id]
         docker_process = subprocess.Popen(docker_command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
 
@@ -143,7 +143,7 @@ def run_container(target_ip):
         # Loop to print output while the container is running
         for line in docker_process.stdout:
             print(line, end='')
-            
+
             if not line.find("no stream found"):
                 print("OK - Streams found")
                 found_in_ip = +1
@@ -157,13 +157,13 @@ def run_container(target_ip):
         print(e.stderr)
 
     finally:
-        # Remove the Docker container after checking
+        #Remove the Docker container after checking
         subprocess.run(["docker", "rm", container_id])
 
 def check_ip(ip_from, ip_list, ip_count):
     with alive_bar(ip_count, title="IP's Checked", bar="bubbles", monitor="Time elapsed", calibrate=5e40) as bar:
         for ip_address in ip_list:
-            # Format the IP address for the Docker command
+            #Format the IP address for the Docker command
             target_ip = str(ip_address)
 
             print(f"Checking {target_ip}...")
@@ -172,7 +172,7 @@ def check_ip(ip_from, ip_list, ip_count):
             t.sleep(0.5)
             bar()
 
-# Code
+#Code
 ip_range = set_ips()
 
 while True:
