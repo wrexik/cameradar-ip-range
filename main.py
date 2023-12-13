@@ -126,6 +126,7 @@ def get_list(ip_from, ip_to):
 
 def run_container(target_ip):
     docker_command = ["docker", "run", "-d", "-t", "ullaakut/cameradar", "-t", target_ip, "-p", "554,5554,8554,8080"]
+    global found_in_ip
     found_in_ip = 0
     try:
         # Run Docker container in detached mode and capture the container ID
@@ -160,7 +161,7 @@ def run_container(target_ip):
         subprocess.run(["docker", "rm", container_id])
 
 def check_ip(ip_from, ip_list, ip_count):
-    with alive_bar(ip_count, title="IP's Checked", bar="bubbles", monitor="ETA", calibrate=5e40) as bar:
+    with alive_bar(ip_count, title="IP's Checked", bar="bubbles", monitor="Time elapsed", calibrate=5e40) as bar:
         for ip_address in ip_list:
             # Format the IP address for the Docker command
             target_ip = str(ip_address)
