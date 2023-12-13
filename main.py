@@ -130,6 +130,7 @@ def check_ip(ip_from, ip_list, ip_count):
             # Format the IP address for the Docker command
             target_ip = str(ip_address)
             
+            
             # Run Cameradar Docker container for the current IP address
             docker_command = ["docker", "run", "-d", "ullaakut/cameradar", "-t", target_ip, "-p 554, 5554, 8554, 8080"]
             try:
