@@ -119,17 +119,12 @@ def get_len(list):
         count += 1
     return count
 
-def get_list():
-    global ip_list
-    global ip_count
-
+def get_list(ip_from, ip_to):
     ip_list = list(netaddr.iter_iprange(ip_from, ip_to))
-
     ip_count = len(ip_list)
+    return ip_list, ip_count
 
-    return ip_count
-
-def check_ip():
+def check_ip(ip_from, ip_list, ip_count):
     with alive_bar(ip_count, title="IP's Checked", bar="bubbles", monitor="ETA", calibrate=50) as bar:
         for ip_address in ip_list:
             # Format the IP address for the Docker command
@@ -144,14 +139,11 @@ def check_ip():
             except subprocess.CalledProcessError as e:
                 print(f"Failed for {target_ip}")
                 print(e.stderr)
-            t.sleep(.5)
+            t.sleep(0.5)
 
             bar()
 
-check_ip()
-
-#Code
-
+# Code
 ip_range = set_ips()
 
 while True:
@@ -166,10 +158,9 @@ while True:
 
 if resume:
     clear()
-
     print("OK - Resuming")
 
-get_list()
+ip_list, ip_count = get_list(ip_from, ip_to)
 
 print("OK - IP addresses to be checked: {}".format(len(ip_list)))
 
@@ -177,5 +168,5 @@ print("OK - Started checking")
 
 print("")
 
-check_ip()
+check_ip(ip_from, ip_list, ip_count)
 
